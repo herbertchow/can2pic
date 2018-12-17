@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>表情包大作战</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+        * {
+            margin: 0 auto;
+            font-family: "PingFang SC";
+        }
+
+        body{
+            font-size: 14px;
+        }
+
+        .container {
+            margin: 0 auto;
+            width: 250px;
+        }
+
+        #content-box {
+            margin: 50px auto 20px auto;
+            width: 250px;
+            background-color: #fff;
+            border: 1px solid #fff;
+        }
+
+        .row {
+            position: relative;
+            text-align: center;
+            font-size: 0;
+        }
+
+        #btn {
+            border: 0;
+            width: 100px;
+            border-radius: 5px;
+            color: #fff;
+            background-color: #000;
+            cursor: pointer;
+            padding: 10px 30px;
+            text-align: center;
+            display: inline-block;
+            box-sizing: border-box;
+            font-size: 14px;
+            margin:0 10px;
+        }
+
+        .upload {
+            border: 0;
+            width: 100px;
+            border-radius: 5px;
+            color: #fff;
+            background-color: #000;
+            cursor: pointer;
+            padding: 10px 30px;
+            text-align: center;
+            box-sizing: border-box;
+            display: inline-block;
+            font-size: 14px;
+            margin:0 10px;
+            position: relative;
+        }
+
+        .clearfloat:after {
+            content: "";
+            height: 0;
+            clear: both;
+            visibility: hidden;
+            display: table-cell;
+        }
+
+        #imageChange {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 100px;
+            height: 42px;
+            opacity: 0;
+            z-index: 233;
+            cursor: pointer;
+            
+        }
+
+        #screen-box {
+            margin: 0 auto 20px;
+            padding: 20px 0;
+        }
+
+
+        #footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #footer a {
+            color: rgba(0, 0, 0, .8);
+
+        }
+
+        #fade {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            text-align: center;
+            padding-top: 100px;
+            font-size: 16px;
+            color: #333;
+            font-weight: bold;
+            box-sizing: border-box;
+            background: rgba(255, 255, 255, .9);
+            display: none;
+        }
+
+        .write{
+            font-size: 14px;
+            padding:5px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div style="padding-top:10px;">使用方式：传图，点击图片下方输入文字，生成个性化表情包</div>
+        <div>PC：右键保存；手机：长按保存或转发</div>
+        <div>图片不会上传服务器，请放心使用</div>
+        
+        <div id="content-box">
+            <!-- <div class="img-box"> -->
+            <img id="image" style="width:100%" src="./jichou.png" alt="记仇">
+            <!-- </div> -->
+            <div contenteditable="true" class="write">
+                这里点击：输入你想要的文字，然后点击生成；或者上传你的图片再生成
+            </div>
+        </div>
+        <div class="row clearfloat">
+            <a id="btn">生成</a>
+            <a class="upload">换图<input type="file" id="imageChange"></a>
+            
+        </div>
+
+        <div id="screen-box">
+
+        </div>
+    </div>
+    <div id="fade">加载中，请稍等...</div>
+
+    <script src="html2canvas.js"></script>
+    <script>
+        /**
+         * 站在巨人的肩膀上作死，如有版权等其他问题请联系:QQ & 邮箱：495567615@qq.com
+         * */
+
+        var btn = document.getElementById('btn');
+        var contentBox = document.getElementById('content-box');
+        var screenBox = document.getElementById('screen-box');
+        var h = contentBox.offsetHeight;
+        var w = contentBox.offsetWidth;
+
+        function showFade() {
+            document.getElementById('fade').style.display = 'block';
+        }
+
+        function hideFade() {
+            document.getElementById('fade').style.display = 'none';
+        }
+
+        btn.onclick = function (event) {
+            showFade();
+
+            html2canvas(contentBox).then(canvas => {
+                canvas.id = "mycanvas";
+                console.log(canvas)
+                
+                var dataUrl = canvas.toDataURL('image/jpeg');
+
+                // document.body.appendChild(canvas)
+
+                var newImg = document.createElement("img");
+
+                newImg.src = dataUrl;
+                //先清空子元素
+                screenBox.innerHTML = '';
+
+                screenBox.appendChild(newImg);
+
+                newImg.style.cssText = newImg.style.cssText + '; -moz-transform-origin:top left; -webkit-transform-origin:top left; transform-origin:top left;';
+                newImg.style.mozTransform = 'scale(' + 1/window.devicePixelRatio || 1 + ')'; newImg.style.webkitTransform = 'scale(' + 1/window.devicePixelRatio || 1 + ')';  
+                newImg.style.msTransform = 'scale(' + 1/window.devicePixelRatio || 1 + ')'; 
+
+                hideFade();
+            }).catch(()=>{
+                hideFade();
+            });
+            
+            //这个版本图片会失真，更新html2canvas 并且换一种调用方式即可
+            // html2canvas(contentBox, {
+            //     // allowTain: true,
+            //     // taintTest: true,
+            //     canvas: canvas,
+            //     onrendered: function (canvas) {
+
+                    
+            //     },
+                
+            //     // width:w*3,
+            //     // height:h*3
+            // })
+        }
+        //自动生成当前日期
+        // var date = new Date();
+        // var year = date.getFullYear();
+        // var month = date.getMonth() + 1;
+        // var day = date.getDate();
+        // var date = document.getElementById('date');
+        // date.innerText = `${year}年${month}月${day}日`;
+        //实现自定义上传图片
+        var image = document.getElementById('image');
+        var imageChange = document.getElementById('imageChange');
+        function readUrl(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    image.setAttribute('src', e.target.result)
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        imageChange.onchange = function () {
+            readUrl(this);
+        }
+
+
+    </script>
+</body>
+
+</html>
